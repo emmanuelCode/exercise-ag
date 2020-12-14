@@ -4,9 +4,9 @@ import 'package:flutter/cupertino.dart';
 /// and update the views to show the result
 /// I will also load the word list with it's constructor
 class AnagramNotifier with ChangeNotifier {
-  String searchInput;
-  String compareInputOne;
-  String compareInputTwo;
+  String searchInput = '';
+  String compareInputOne = '';
+  String compareInputTwo = '';
   String wordText;
   List<String> anagramWords;
 

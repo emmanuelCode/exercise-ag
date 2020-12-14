@@ -1,5 +1,6 @@
 import 'package:exercise_ag/anagram_notifier.dart';
 import 'package:exercise_ag/info_board.dart';
+import 'package:exercise_ag/result_filter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -33,7 +34,7 @@ class Search extends StatelessWidget {
             ),
           ),
         ),
-        (searchText != null)
+        searchText.isNotEmpty
             ? Expanded(
                 /// search list anagram
                 child: Container(
@@ -43,7 +44,7 @@ class Search extends StatelessWidget {
                     //test widget
                     itemBuilder: (_, index) => Padding(
                       padding: const EdgeInsets.all(14.0),
-                      child: Text(resultFilter(
+                      child: Text(Filter.searchListResult(
                           searchText, anagramWords)[index]), //Todo To change
                     ), //item widget
                     separatorBuilder: (_, index) => Divider(
@@ -51,7 +52,7 @@ class Search extends StatelessWidget {
                       indent: 7.0,
                       endIndent: 7.0,
                     ),
-                    itemCount: resultFilter(searchText, anagramWords)
+                    itemCount: Filter.searchListResult(searchText, anagramWords)
                         .length, //todo : to change
                   ),
                 ),
@@ -185,16 +186,4 @@ Widget compareTextField(String hint, dynamic updateText) {
       labelText: hint,
     ),
   );
-}
-
-///algorithm for search wiget //todo need optimization very slow...
-List<String> resultFilter(String search, List<String> wordsList) {
-  return wordsList.where((element) {
-    String e = (element.split('')..sort()).join('');
-    String s = (search.split('')..sort()).join('');
-
-    bool test = (e == s);
-
-    return test;
-  }).toList();
 }

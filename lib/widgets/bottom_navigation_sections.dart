@@ -77,7 +77,7 @@ class Compare extends StatelessWidget {
   }
 }
 
-///...
+/// the stats widget
 class Stats extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

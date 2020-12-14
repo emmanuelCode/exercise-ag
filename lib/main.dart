@@ -1,8 +1,20 @@
+import 'package:exercise_ag/anagram_notifier.dart';
 import 'package:exercise_ag/widgets/bottom_navigation_sections.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  //need this to initialize FileRead.loadString before the runApp();
+  WidgetsFlutterBinding.ensureInitialized();
+  String loadWordList = await FileRead.loadString(); //loads words.txt
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => AnagramNotifier(loadWordList),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -89,5 +101,12 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ], currentIndex: _selectedIndex, onTap: _onItemTapped),
     );
+  }
+}
+
+/// a helper class to load word list
+class FileRead {
+  static Future<String> loadString() async {
+    return await rootBundle.loadString('lib/data/words.txt');
   }
 }

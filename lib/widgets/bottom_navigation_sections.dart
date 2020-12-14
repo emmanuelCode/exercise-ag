@@ -1,10 +1,19 @@
+import 'package:exercise_ag/anagram_notifier.dart';
 import 'package:exercise_ag/info_board.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 /// the search widget for finding all anagrams
 class Search extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    //get our update search method to notify when input is changing
+    var updateInput = context
+        .select<AnagramNotifier, dynamic>((value) => value.updateSearchInput);
+
+    String searchText = context.watch<AnagramNotifier>().searchInput;
+    List<String> anagramWords = context.watch<AnagramNotifier>().anagramWords;
+
     return Column(
       children: [
         Container(
@@ -15,7 +24,7 @@ class Search extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                searchTextField(),
+                searchTextField(updateInput),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Icon(Icons.search),
@@ -24,8 +33,29 @@ class Search extends StatelessWidget {
             ),
           ),
         ),
-        false
-            ? Text('data')
+        (searchText != null)
+            ? Expanded(
+                /// search list anagram
+                child: Container(
+                  color: Colors.white,
+                  margin: EdgeInsets.only(top: 14.0),
+                  child: ListView.separated(
+                    //test widget
+                    itemBuilder: (_, index) => Padding(
+                      padding: const EdgeInsets.all(14.0),
+                      child: Text(resultFilter(
+                          searchText, anagramWords)[index]), //Todo To change
+                    ), //item widget
+                    separatorBuilder: (_, index) => Divider(
+                      color: Colors.grey,
+                      indent: 7.0,
+                      endIndent: 7.0,
+                    ),
+                    itemCount: resultFilter(searchText, anagramWords)
+                        .length, //todo : to change
+                  ),
+                ),
+              )
             : Container(
                 //if search text tenary operator...
                 //TODO: to change when having result...
@@ -34,26 +64,6 @@ class Search extends StatelessWidget {
                 margin: EdgeInsets.only(top: 14.0),
                 child: InfoBoard.searchExplanation(),
               ),
-        Expanded(
-          /// search list anagram
-          child: Container(
-            color: Colors.white,
-            margin: EdgeInsets.only(top: 14.0),
-            child: ListView.separated(
-              //test widget
-              itemBuilder: (_, index) => Padding(
-                padding: const EdgeInsets.all(14.0),
-                child: Text('item $index'), //Todo To change
-              ), //item widget
-              separatorBuilder: (_, index) => Divider(
-                color: Colors.grey,
-                indent: 7.0,
-                endIndent: 7.0,
-              ),
-              itemCount: 7, //todo : to change
-            ),
-          ),
-        ),
       ],
     );
   }
@@ -63,6 +73,12 @@ class Search extends StatelessWidget {
 class Compare extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    //get access to our anagram_notifier methods
+    var updateInputOne = context.select<AnagramNotifier, dynamic>(
+        (value) => value.updateCompareInputOne);
+    var updateInputTwo = context.select<AnagramNotifier, dynamic>(
+        (value) => value.updateCompareInputTwo);
+
     return Column(
       children: [
         Container(
@@ -74,9 +90,9 @@ class Compare extends StatelessWidget {
                 Expanded(
                   child: Column(
                     children: [
-                      compareTextField('Word 1'),
+                      compareTextField('Word 1', updateInputOne),
                       SizedBox(height: 16),
-                      compareTextField('Word 2'),
+                      compareTextField('Word 2', updateInputTwo),
                     ],
                   ),
                 ),
@@ -131,11 +147,12 @@ class Stats extends StatelessWidget {
 /// HELPER WIDGETS FOR TEXT FIELDS ///
 
 /// a stylize text field for the search field
-Widget searchTextField() {
+Widget searchTextField(dynamic updateText) {
   return Expanded(
     //textField need expanded (for rendering error)
     child: TextField(
       onChanged: (value) {
+        updateText(value);
         //try with the contains widget
         print('entered Text: $value');
       },
@@ -152,8 +169,15 @@ Widget searchTextField() {
 /// a stylize text field that take in a hint
 /// it is created to avoid repetition in code
 /// and shrink codebase.
-Widget compareTextField(String hint) {
+Widget compareTextField(String hint, dynamic updateText) {
   return TextField(
+    onChanged: (value) {
+      updateText(value);
+
+      //debug
+      // print(context.read<AnagramNotifier>().compareInputOne);
+      // print(context.read<AnagramNotifier>().compareInputTwo);
+    },
     decoration: InputDecoration(
       contentPadding: EdgeInsets.all(8),
       border: OutlineInputBorder(
@@ -161,4 +185,16 @@ Widget compareTextField(String hint) {
       labelText: hint,
     ),
   );
+}
+
+///algorithm for search wiget //todo need optimization very slow...
+List<String> resultFilter(String search, List<String> wordsList) {
+  return wordsList.where((element) {
+    String e = (element.split('')..sort()).join('');
+    String s = (search.split('')..sort()).join('');
+
+    bool test = (e == s);
+
+    return test;
+  }).toList();
 }

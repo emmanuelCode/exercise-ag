@@ -24,12 +24,35 @@ class Search extends StatelessWidget {
             ),
           ),
         ),
-        Container(
-          //TODO: to change when having result...
-          //explanation container
-          color: Colors.white,
-          margin: EdgeInsets.only(top: 14.0),
-          child: InfoBoard.searchExplanation(),
+        false
+            ? Text('data')
+            : Container(
+                //if search text tenary operator...
+                //TODO: to change when having result...
+                //explanation container
+                color: Colors.white,
+                margin: EdgeInsets.only(top: 14.0),
+                child: InfoBoard.searchExplanation(),
+              ),
+        Expanded(
+          /// search list anagram
+          child: Container(
+            color: Colors.white,
+            margin: EdgeInsets.only(top: 14.0),
+            child: ListView.separated(
+              //test widget
+              itemBuilder: (_, index) => Padding(
+                padding: const EdgeInsets.all(14.0),
+                child: Text('item $index'), //Todo To change
+              ), //item widget
+              separatorBuilder: (_, index) => Divider(
+                color: Colors.grey,
+                indent: 7.0,
+                endIndent: 7.0,
+              ),
+              itemCount: 7, //todo : to change
+            ),
+          ),
         ),
       ],
     );
@@ -105,11 +128,17 @@ class Stats extends StatelessWidget {
   }
 }
 
+/// HELPER WIDGETS FOR TEXT FIELDS ///
+
 /// a stylize text field for the search field
 Widget searchTextField() {
   return Expanded(
     //textField need expanded (for rendering error)
     child: TextField(
+      onChanged: (value) {
+        //try with the contains widget
+        print('entered Text: $value');
+      },
       decoration: InputDecoration(
         contentPadding: EdgeInsets.all(8),
         border: OutlineInputBorder(

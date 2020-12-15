@@ -44,7 +44,7 @@ class Search extends StatelessWidget {
                     //test widget
                     itemBuilder: (_, index) => Padding(
                       padding: const EdgeInsets.all(14.0),
-                      child: Text(Filter.searchListResult(
+                      child: Text(Filter.searchListResultPrototype(
                           searchText, anagramWords)[index]), //Todo To change
                     ), //item widget
                     separatorBuilder: (_, index) => Divider(
@@ -52,7 +52,8 @@ class Search extends StatelessWidget {
                       indent: 7.0,
                       endIndent: 7.0,
                     ),
-                    itemCount: Filter.searchListResult(searchText, anagramWords)
+                    itemCount: Filter.searchListResultPrototype(
+                            searchText, anagramWords)
                         .length, //todo : to change
                   ),
                 ),
@@ -80,7 +81,15 @@ class Compare extends StatelessWidget {
     var updateInputTwo = context.select<AnagramNotifier, dynamic>(
         (value) => value.updateCompareInputTwo);
 
+    var inputOne = context.watch<AnagramNotifier>().compareInputOne;
+    var inputTwo = context.watch<AnagramNotifier>().compareInputTwo;
+
+    bool areAnagrams = Filter.compareResult(inputOne, inputTwo) &&
+        inputTwo.isNotEmpty &&
+        inputTwo.isNotEmpty;
+
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Container(
           color: Colors.white,
@@ -105,13 +114,19 @@ class Compare extends StatelessWidget {
             ),
           ),
         ),
-        Container(
-          //TODO: to change when having result...
-          //explanation container
-          color: Colors.white,
-          margin: EdgeInsets.only(top: 14.0),
-          child: InfoBoard.compareExplanation(),
-        ),
+        areAnagrams
+            ? Container(
+                //result container
+                color: Colors.white,
+                margin: EdgeInsets.only(top: 14.0),
+                child: InfoBoard.compareResultExplanation(inputOne, inputTwo),
+              )
+            : Container(
+                //explanation container
+                color: Colors.white,
+                margin: EdgeInsets.only(top: 14.0),
+                child: InfoBoard.compareExplanation(),
+              ),
       ],
     );
   }

@@ -67,4 +67,31 @@ class InfoBoard {
       ),
     );
   }
+
+  /// the result of the two compared anagrams
+  static Widget compareResultExplanation(String value1, String value2) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: RichText(
+        text: TextSpan(
+          text: value1 + ' ',
+          style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
+          children: <TextSpan>[
+            TextSpan(
+              text: 'and ',
+              style: TextStyle(color: textColor, fontWeight: FontWeight.normal),
+            ),
+            TextSpan(
+              text: value2 + ' ',
+              style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
+            ),
+            TextSpan(
+              text: 'are anagrams!',
+              style: TextStyle(color: textColor, fontWeight: FontWeight.normal),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

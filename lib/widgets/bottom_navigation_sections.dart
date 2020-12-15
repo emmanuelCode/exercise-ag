@@ -1,6 +1,7 @@
 import 'package:exercise_ag/anagram_notifier.dart';
 import 'package:exercise_ag/info_board.dart';
 import 'package:exercise_ag/result_filter.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,6 +17,7 @@ class Search extends StatelessWidget {
     List<String> anagramWords = context.watch<AnagramNotifier>().anagramWords;
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Container(
           //search container
@@ -40,27 +42,39 @@ class Search extends StatelessWidget {
                 child: Container(
                   color: Colors.white,
                   margin: EdgeInsets.only(top: 14.0),
-                  child: ListView.separated(
-                    //test widget
-                    itemBuilder: (_, index) => Padding(
-                      padding: const EdgeInsets.all(14.0),
-                      child: Text(Filter.searchListResultPrototype(
-                          searchText, anagramWords)[index]), //Todo To change
-                    ), //item widget
-                    separatorBuilder: (_, index) => Divider(
-                      color: Colors.grey,
-                      indent: 7.0,
-                      endIndent: 7.0,
-                    ),
-                    itemCount: Filter.searchListResultPrototype(
-                            searchText, anagramWords)
-                        .length, //todo : to change
+                  child: FutureBuilder<List<String>>(
+                    future: compute(Filter.searchListResult,
+                        MapEntry(searchText, anagramWords)),
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      //will hold our widgets for the return result
+                      Widget child;
+
+                      if (snapshot.hasData) {
+                        child = ListView.separated(
+                          //test widget
+                          itemBuilder: (_, index) => Padding(
+                            padding: const EdgeInsets.all(14.0),
+                            child: Text(snapshot.data[index]), //Todo To change
+                          ), //item widget
+                          separatorBuilder: (_, index) => Divider(
+                            color: Colors.grey,
+                            indent: 7.0,
+                            endIndent: 7.0,
+                          ),
+                          itemCount: snapshot.data.length, //todo : to change
+                        );
+                      } else {
+                        child = Padding(
+                          padding: const EdgeInsets.all(100.0),
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      return child;
+                    },
                   ),
                 ),
               )
             : Container(
-                //if search text tenary operator...
-                //TODO: to change when having result...
                 //explanation container
                 color: Colors.white,
                 margin: EdgeInsets.only(top: 14.0),
